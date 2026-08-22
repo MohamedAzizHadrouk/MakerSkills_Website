@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.editor ul,
+.editor ol {
+  list-style: disc outside none;
+  margin: 1em 0;
+  padding-left: 2em;
+}
+
+.editor ol {
+  list-style: decimal outside none;
+}
+.prose ul,
+.prose ol {
+  list-style: disc outside none;
+  margin: 1em 0;
+  padding-left: 2em;
+}
+.prose ol {
+    list-style: decimal outside none;
+}
+
