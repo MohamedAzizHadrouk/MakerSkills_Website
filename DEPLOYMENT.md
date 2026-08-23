@@ -496,13 +496,24 @@ All four lines should print `***set***`. Then open `.env` and ensure:
 
 The backend entrypoint refuses to start if `MONGODB_URI`, `JWT_SECRET`, or `CORS_ORIGINS` are empty.
 
-#### 3. Allow the VPS IP in MongoDB Atlas
+#### 3. `Cannot find module '/app/dist/main.js'`
+
+If logs show this error, Nest was emitting `dist/src/main.js` instead of `dist/main.js` (root-level TS files polluted the compile `rootDir`). Current repo locks [`backend/tsconfig.build.json`](./backend/tsconfig.build.json) to `src/` only.
+
+```bash
+cd /home/ubuntu/makerskills
+git pull --ff-only
+docker compose -p makerskills up --build -d
+docker logs -f makerskills-backend
+```
+
+#### 4. Allow the VPS IP in MongoDB Atlas
 
 Atlas → **Network Access** → add the VPS public / egress IP (or temporarily `0.0.0.0/0` only to test connectivity).
 
 If Atlas blocks the IP, logs show a Mongo network/auth/timeout error even when `.env` is correct.
 
-#### 4. Rebuild and restart only Maker Skills
+#### 5. Rebuild and restart only Maker Skills
 
 ```bash
 cd /home/ubuntu/makerskills
@@ -513,7 +524,7 @@ docker logs -f makerskills-backend
 
 Wait up to ~90s for the healthcheck grace period (Atlas connect can be slow).
 
-#### 5. Verify
+#### 6. Verify
 
 ```bash
 curl -s http://127.0.0.1:3100/health

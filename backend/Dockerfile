@@ -7,6 +7,7 @@ RUN npm ci
 
 COPY . .
 RUN npm run build
+RUN test -f dist/main.js || (echo "Expected dist/main.js; got:" && find dist -name 'main.js' && exit 1)
 
 # ---- runtime ----
 FROM node:20-alpine AS runtime
