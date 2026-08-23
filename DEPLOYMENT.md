@@ -456,12 +456,71 @@ sudo tail -f /var/log/nginx/error.log
 | Symptom | Likely cause | Action |
 |---------|--------------|--------|
 | Port already allocated | Clash with RondeGuard / wrong `FRONTEND_HOST_PORT` | Keep `3100`; never bind `3000` |
-| Backend unhealthy | Bad `MONGODB_URI` / Atlas IP allowlist / missing `JWT_SECRET` | `docker logs makerskills-backend` |
+| Backend unhealthy | Bad `MONGODB_URI` / Atlas IP allowlist / missing `JWT_SECRET` or `CORS_ORIGINS` | See [Backend unhealthy runbook](#backend-unhealthy-runbook) below |
 | Frontend 502 from host Nginx | Stack not up or wrong upstream port | `curl 127.0.0.1:3100`; check vhost |
 | API 404 from browser | Path not proxied in `frontend/nginx.conf` | Add location; rebuild frontend |
 | CORS errors | `CORS_ORIGINS` missing production origin | Update `.env`, recreate backend |
 | Empty media after recreate | Volume deleted | Restore backup; never wipe `makerskills_uploads` casually |
 | Actions deploy fails | SSH secrets / permissions | Verify `VPS_*` secrets and Docker access for the SSH user |
+
+### Backend unhealthy runbook
+
+Symptom:
+
+```text
+dependency failed to start: container makerskills-backend is unhealthy
+```
+
+The frontend will not start until the backend is healthy (`depends_on: condition: service_healthy`).
+
+#### 1. Read the logs (first step)
+
+```bash
+docker logs makerskills-backend 2>&1 | tail -80
+docker inspect makerskills-backend --format '{{.State.Status}} {{.State.Health.Status}} {{.State.Error}}'
+```
+
+#### 2. Confirm required `.env` keys are set (no placeholders)
+
+```bash
+cd /home/ubuntu/makerskills
+grep -E '^(MONGODB_URI|JWT_SECRET|CORS_ORIGINS|NODE_ENV)=' .env | sed 's/=.*/=***set***/'
+```
+
+All four lines should print `***set***`. Then open `.env` and ensure:
+
+- `MONGODB_URI` is a real Atlas URI (not `USER:PASSWORD@CLUSTER`)
+- `JWT_SECRET` is a long random value (`openssl rand -hex 32`)
+- `CORS_ORIGINS` lists your public origins, e.g. `https://www.makerskills.tn,https://makerskills.tn`
+- `NODE_ENV=production`
+
+The backend entrypoint refuses to start if `MONGODB_URI`, `JWT_SECRET`, or `CORS_ORIGINS` are empty.
+
+#### 3. Allow the VPS IP in MongoDB Atlas
+
+Atlas → **Network Access** → add the VPS public / egress IP (or temporarily `0.0.0.0/0` only to test connectivity).
+
+If Atlas blocks the IP, logs show a Mongo network/auth/timeout error even when `.env` is correct.
+
+#### 4. Rebuild and restart only Maker Skills
+
+```bash
+cd /home/ubuntu/makerskills
+docker compose -p makerskills up --build -d
+docker compose -p makerskills ps
+docker logs -f makerskills-backend
+```
+
+Wait up to ~90s for the healthcheck grace period (Atlas connect can be slow).
+
+#### 5. Verify
+
+```bash
+curl -s http://127.0.0.1:3100/health
+curl -I http://127.0.0.1:3100/
+```
+
+Expect `"status":"ok"` from `/health`.
 
 ### Docker build: Nest TypeScript failures
 
