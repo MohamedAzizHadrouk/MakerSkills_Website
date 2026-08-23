@@ -16,8 +16,8 @@
 .env.*
 !.env.example
 
-# Runtime data
-**/uploads
+# Runtime data (not NestJS UploadsModule under backend/src/uploads)
+**/backend/uploads
 **/*.log
 
 # Docs and misc (not needed in image context)

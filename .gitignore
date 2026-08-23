@@ -16,10 +16,12 @@ dist/
 build/
 **/build/
 
-# Uploads and local data
-uploads/
-**/uploads/
-backend/uploads/
+# Runtime upload media (disk storage) — NOT NestJS UploadsModule source
+/backend/uploads/
+/uploads/
+# Keep source module trackable
+!/backend/src/uploads/
+!/backend/src/uploads/**
 
 # Logs and coverage
 logs/

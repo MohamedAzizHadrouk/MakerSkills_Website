@@ -10,6 +10,8 @@ if (!MONGODB_URI) {
   throw new Error('MONGODB_URI environment variable is required');
 }
 
+const mongoUri: string = MONGODB_URI;
+
 interface SlugDoc {
   _id: mongoose.Types.ObjectId;
   slug?: string;
@@ -72,7 +74,7 @@ async function ensureIndexes(): Promise<void> {
 
 async function main(): Promise<void> {
   console.log('Connecting to MongoDB...');
-  await mongoose.connect(MONGODB_URI);
+  await mongoose.connect(mongoUri);
   console.log('Connected.\n');
 
   const results = {

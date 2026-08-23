@@ -1,6 +1,7 @@
 node_modules
 dist
-uploads
+# Runtime media folder only — keep NestJS src/uploads module
+/uploads
 .env
 .env.*
 !.env.example
