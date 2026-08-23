@@ -1,0 +1,64 @@
+name: makerskills
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: makerskills-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: ${PORT:-3020}
+      MONGODB_URI: ${MONGODB_URI}
+      JWT_SECRET: ${JWT_SECRET}
+      CORS_ORIGINS: ${CORS_ORIGINS}
+      SITE_URL: ${SITE_URL:-https://www.makerskills.tn}
+      UPLOADS_DIR: /app/uploads
+    volumes:
+      - makerskills_uploads:/app/uploads
+    networks:
+      - makerskills_net
+    # Intentionally NOT published to the host — reachable only via Docker network
+    expose:
+      - "3020"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3020/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-}
+    container_name: makerskills-frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      # Avoid RondeGuard host ports (3000, 5000, 27018, 8884, 8085, 18083)
+      - "127.0.0.1:${FRONTEND_HOST_PORT:-3100}:80"
+    networks:
+      - makerskills_net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+networks:
+  makerskills_net:
+    name: makerskills_net
+    driver: bridge
+
+volumes:
+  makerskills_uploads:
+    name: makerskills_uploads

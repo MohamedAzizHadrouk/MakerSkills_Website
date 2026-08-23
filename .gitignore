@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Build outputs
+dist/
+**/dist/
+build/
+**/build/
+
+# Uploads and local data
+uploads/
+**/uploads/
+backend/uploads/
+
+# Logs and coverage
+logs/
+*.log
+npm-debug.log*
+coverage/
+**/coverage/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Docker / local overrides
+docker-compose.override.yml
+
+# Misc
+*.tsbuildinfo
+.turbo/
+.cache/

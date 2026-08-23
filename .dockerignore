@@ -1,0 +1,30 @@
+# Git / IDE
+.git
+.github
+.cursor
+.vscode
+.idea
+
+# Dependencies and builds
+**/node_modules
+**/dist
+**/build
+**/coverage
+
+# Env and secrets
+.env
+.env.*
+!.env.example
+
+# Runtime data
+**/uploads
+**/*.log
+
+# Docs and misc (not needed in image context)
+*.md
+!frontend/README.md
+!backend/README.md
+
+# OS
+.DS_Store
+Thumbs.db
