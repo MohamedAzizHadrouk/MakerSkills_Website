@@ -17,6 +17,16 @@ if [ "$missing" -ne 0 ]; then
   exit 1
 fi
 
+# Reject .env.example placeholders (causes querySrv ENOTFOUND _mongodb._tcp.CLUSTER.mongodb.net)
+case "$MONGODB_URI" in
+  *@CLUSTER.mongodb.net*|*"USER:PASSWORD@"*)
+    echo "[entrypoint] ERROR: MONGODB_URI is still the .env.example placeholder."
+    echo "[entrypoint] Edit /home/ubuntu/makerskills/.env and set the real Atlas URI from Atlas → Connect."
+    echo "[entrypoint] Hostname must look like something.xxxxx.mongodb.net — not CLUSTER.mongodb.net"
+    exit 1
+    ;;
+esac
+
 # Named volume may remount /app/uploads as root — fix ownership before dropping privileges
 mkdir -p /app/uploads
 chown -R app:app /app/uploads

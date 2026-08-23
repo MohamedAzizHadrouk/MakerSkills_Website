@@ -174,7 +174,7 @@ chmod 600 .env
 | `FRONTEND_HOST_PORT` | no | Host bind port (default `3100`) |
 | `COMPOSE_PROJECT_NAME` | no | Default `makerskills` |
 
-Example shape (fake values):
+Example shape (fake values — **never** leave `USER` / `PASSWORD` / `CLUSTER` in production):
 
 ```env
 NODE_ENV=production
@@ -186,6 +186,8 @@ SITE_URL=https://www.makerskills.tn
 VITE_API_URL=
 FRONTEND_HOST_PORT=3100
 ```
+
+Replace `USER`, `PASSWORD`, and `CLUSTER` with values from **MongoDB Atlas → Connect**. A real host looks like `makerskills.xxxxx.mongodb.net`, not the literal word `CLUSTER`.
 
 Generate a JWT secret:
 
@@ -494,9 +496,26 @@ All four lines should print `***set***`. Then open `.env` and ensure:
 - `CORS_ORIGINS` lists your public origins, e.g. `https://www.makerskills.tn,https://makerskills.tn`
 - `NODE_ENV=production`
 
-The backend entrypoint refuses to start if `MONGODB_URI`, `JWT_SECRET`, or `CORS_ORIGINS` are empty.
+The backend entrypoint refuses to start if `MONGODB_URI`, `JWT_SECRET`, or `CORS_ORIGINS` are empty, or if `MONGODB_URI` still contains the `.env.example` placeholders (`CLUSTER.mongodb.net` / `USER:PASSWORD@`).
 
-#### 3. `Cannot find module '/app/dist/main.js'`
+#### 3. `querySrv ENOTFOUND _mongodb._tcp.CLUSTER.mongodb.net`
+
+**Cause:** `/home/ubuntu/makerskills/.env` still has the template URI from `.env.example` (`…@CLUSTER.mongodb.net…`). DNS cannot resolve `CLUSTER.mongodb.net`.
+
+**Fix on the VPS (no code rebuild required once URI is correct):**
+
+1. Atlas → your cluster → **Connect** → copy the real `mongodb+srv://…` string.
+2. `nano /home/ubuntu/makerskills/.env` — set `MONGODB_URI` to that real URI (real user, password, and host like `something.xxxxx.mongodb.net`).
+3. Atlas → **Network Access** → allow the VPS public IP (or temporarily `0.0.0.0/0` to test).
+4. Recreate:
+
+```bash
+cd /home/ubuntu/makerskills
+docker compose -p makerskills up -d --force-recreate
+docker logs -f makerskills-backend
+```
+
+#### 4. `Cannot find module '/app/dist/main.js'`
 
 If logs show this error, Nest was emitting `dist/src/main.js` instead of `dist/main.js` (root-level TS files polluted the compile `rootDir`). Current repo locks [`backend/tsconfig.build.json`](./backend/tsconfig.build.json) to `src/` only.
 
@@ -507,13 +526,13 @@ docker compose -p makerskills up --build -d
 docker logs -f makerskills-backend
 ```
 
-#### 4. Allow the VPS IP in MongoDB Atlas
+#### 5. Allow the VPS IP in MongoDB Atlas
 
 Atlas → **Network Access** → add the VPS public / egress IP (or temporarily `0.0.0.0/0` only to test connectivity).
 
 If Atlas blocks the IP, logs show a Mongo network/auth/timeout error even when `.env` is correct.
 
-#### 5. Rebuild and restart only Maker Skills
+#### 6. Rebuild and restart only Maker Skills
 
 ```bash
 cd /home/ubuntu/makerskills
@@ -524,7 +543,7 @@ docker logs -f makerskills-backend
 
 Wait up to ~90s for the healthcheck grace period (Atlas connect can be slow).
 
-#### 6. Verify
+#### 7. Verify
 
 ```bash
 curl -s http://127.0.0.1:3100/health
