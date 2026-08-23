@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Idempotent deployment for Maker Skills only.
-# MUST be run from /opt/apps/makerskills (never from RondeGuard paths).
+# MUST be run from /home/ubuntu/makerskills (never from /home/ubuntu/rondeguard).
 set -euo pipefail
 
-APP_DIR="${APP_DIR:-/opt/apps/makerskills}"
+APP_DIR="${APP_DIR:-/home/ubuntu/makerskills}"
 COMPOSE_PROJECT="${COMPOSE_PROJECT_NAME:-makerskills}"
 FRONTEND_HOST_PORT="${FRONTEND_HOST_PORT:-3100}"
 HEALTH_RETRIES="${HEALTH_RETRIES:-30}"

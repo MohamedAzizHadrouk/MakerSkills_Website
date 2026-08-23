@@ -31,7 +31,7 @@ Compose project name: **`makerskills`**
 Commands must always use the project name and app directory:
 
 ```bash
-cd /opt/apps/makerskills
+cd /home/ubuntu/makerskills
 docker compose -p makerskills ps
 docker compose -p makerskills logs -f
 ```
@@ -41,7 +41,7 @@ docker compose -p makerskills logs -f
 ## 3. Directory structure (VPS)
 
 ```text
-/opt/apps/
+/home/ubuntu/
 ├── rondeguard/          # DO NOT TOUCH
 └── makerskills/         # this application
     ├── frontend/
@@ -101,7 +101,7 @@ Do not delete this volume unless you intend to destroy uploaded media.
 
 ## 7. Environment variables
 
-Copy [`.env.example`](./.env.example) to `/opt/apps/makerskills/.env` on the server.
+Copy [`.env.example`](./.env.example) to `/home/ubuntu/makerskills/.env` on the server.
 
 | Variable | Required | Description |
 |----------|----------|-------------|
@@ -126,7 +126,7 @@ Copy [`.env.example`](./.env.example) to `/opt/apps/makerskills/.env` on the ser
 2. Put Atlas credentials only in `MONGODB_URI` on the server.
 3. **Rotate** any MongoDB password that was previously hardcoded in source history.
 4. Never commit `.env`.
-5. Restrict file permissions: `chmod 600 /opt/apps/makerskills/.env`.
+5. Restrict file permissions: `chmod 600 /home/ubuntu/makerskills/.env`.
 
 Default seeded admin accounts (if DB is empty) must be changed immediately after first boot.
 
@@ -139,9 +139,7 @@ Remote (example): `git@github.com:MohamedAzizHadrouk/MakerSkills_Website.git`
 On the VPS:
 
 ```bash
-sudo mkdir -p /opt/apps/makerskills
-sudo chown "$USER":"$USER" /opt/apps/makerskills
-cd /opt/apps
+cd /home/ubuntu
 git clone git@github.com:MohamedAzizHadrouk/MakerSkills_Website.git makerskills
 cd makerskills
 cp .env.example .env
@@ -213,7 +211,7 @@ Do not reuse personal interactive SSH keys in Actions if avoidable.
 Template in repo: [`deploy/nginx/makerskills.conf`](./deploy/nginx/makerskills.conf)
 
 ```bash
-sudo cp /opt/apps/makerskills/deploy/nginx/makerskills.conf /etc/nginx/sites-available/makerskills.tn
+sudo cp /home/ubuntu/makerskills/deploy/nginx/makerskills.conf /etc/nginx/sites-available/makerskills.tn
 sudo ln -sf /etc/nginx/sites-available/makerskills.tn /etc/nginx/sites-enabled/makerskills.tn
 sudo nginx -t
 sudo systemctl reload nginx
@@ -259,7 +257,7 @@ Containers keep speaking HTTP on localhost / Docker networks.
 ## 15. First deployment
 
 ```bash
-cd /opt/apps/makerskills
+cd /home/ubuntu/makerskills
 cp .env.example .env
 nano .env   # set MONGODB_URI, JWT_SECRET, CORS_ORIGINS, SITE_URL
 
@@ -290,10 +288,10 @@ Triggers:
 Flow:
 
 1. Actions SSHs into the VPS.
-2. `cd /opt/apps/makerskills`
+2. `cd /home/ubuntu/makerskills`
 3. Runs `./deploy/deploy.sh` (git pull, compose build/up, health checks).
 
-The workflow never enters `/opt/apps/rondeguard` and never runs global Docker cleanup.
+The workflow never enters `/home/ubuntu/rondeguard` and never runs global Docker cleanup.
 
 ---
 
@@ -302,7 +300,7 @@ The workflow never enters `/opt/apps/rondeguard` and never runs global Docker cl
 Uploads volume is preserved across deploys. To roll back code/images:
 
 ```bash
-cd /opt/apps/makerskills
+cd /home/ubuntu/makerskills
 git fetch --all
 git log --oneline -n 20
 git checkout <known-good-commit>
@@ -314,7 +312,7 @@ If images are broken but git is fine, rebuild after fixing `.env` / code. Avoid 
 Emergency stop **only this stack**:
 
 ```bash
-cd /opt/apps/makerskills
+cd /home/ubuntu/makerskills
 docker compose -p makerskills stop
 ```
 
@@ -325,7 +323,7 @@ Do **not** run `docker compose down` against RondeGuard.
 ## 18. Logs
 
 ```bash
-cd /opt/apps/makerskills
+cd /home/ubuntu/makerskills
 docker compose -p makerskills logs -f --tail=200
 docker compose -p makerskills logs -f backend
 docker compose -p makerskills logs -f frontend
@@ -383,7 +381,7 @@ docker system prune -a
 docker system prune -a --volumes
 
 # Wrong project directory
-cd /opt/apps/rondeguard && docker compose down
+cd /home/ubuntu/rondeguard && docker compose down
 docker compose -p <rondeguard-project> down
 
 # Destroy Maker Skills uploads
@@ -393,8 +391,8 @@ docker volume rm makerskills_uploads
 docker stop $(docker ps -q)
 
 # Modify RondeGuard configs
-# /opt/apps/rondeguard/** 
+# /home/ubuntu/rondeguard/** 
 # /etc/nginx/sites-enabled/roundeguard.com
 ```
 
-Safe scoped operations stay inside `/opt/apps/makerskills` and use `-p makerskills`.
+Safe scoped operations stay inside `/home/ubuntu/makerskills` and use `-p makerskills`.

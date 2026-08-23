@@ -73,7 +73,7 @@ The backend has **no host port publish**. It is not reachable from the public in
 
 | Resource | Maker Skills | RondeGuard |
 |----------|--------------|------------|
-| Path on VPS | `/opt/apps/makerskills` | `/opt/apps/rondeguard` (unchanged) |
+| Path on VPS | `/home/ubuntu/makerskills` | `/home/ubuntu/rondeguard` (unchanged) |
 | Compose project | `makerskills` | separate |
 | Network | `makerskills_net` | separate |
 | Volumes | `makerskills_uploads` | separate |
@@ -87,7 +87,7 @@ sequenceDiagram
   participant Dev as Developer
   participant GH as GitHub main
   participant GHA as GitHub Actions
-  participant VPS as VPS /opt/apps/makerskills
+  participant VPS as VPS /home/ubuntu/makerskills
 
   Dev->>GH: Push or merge to main
   GH->>GHA: workflow deploy.yml
@@ -100,7 +100,7 @@ sequenceDiagram
 
 ## Security boundaries
 
-- Secrets live in `/opt/apps/makerskills/.env` on the server (never committed).
+- Secrets live in `/home/ubuntu/makerskills/.env` on the server (never committed).
 - No Docker socket mount.
 - No shared secrets/networks/volumes with RondeGuard.
 - HTTPS terminates at host Nginx; containers speak HTTP on the loopback / Docker network.

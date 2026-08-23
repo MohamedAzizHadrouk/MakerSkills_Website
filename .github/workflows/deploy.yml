@@ -28,12 +28,12 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: 22
           script_stop: true
-          # Operate ONLY inside Maker Skills — never RondeGuard
+          # Operate ONLY inside Maker Skills — never /home/ubuntu/rondeguard
           script: |
             set -euo pipefail
-            cd /opt/apps/makerskills
+            cd /home/ubuntu/makerskills
             if [ ! -f docker-compose.yml ]; then
-              echo "ERROR: /opt/apps/makerskills/docker-compose.yml missing"
+              echo "ERROR: /home/ubuntu/makerskills/docker-compose.yml missing"
               exit 1
             fi
             chmod +x deploy/deploy.sh
