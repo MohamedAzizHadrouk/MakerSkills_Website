@@ -179,14 +179,14 @@ function App() {
             }
           />
         
-          <Route
+       {/*    <Route
             path="/shop"
             element={
               <PublicLayout>
                 <Shop />
               </PublicLayout>
             }
-          />
+          /> */}
           <Route
             path="/shop/:slug"
             element={
