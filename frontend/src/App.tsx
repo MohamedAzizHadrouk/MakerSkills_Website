@@ -34,11 +34,11 @@ import BlogsManagement from "./features/admin/blogs/BlogsManagement";
 import BlogDetail from "./features/admin/blogs/BlogDetail";
 import HeroSectionManagement from "./features/admin/hero-section/HeroSectionManagement";
 import Services from "./features/public/services/Services";
-// import Shop from "./features/public/shop/Shop";
+import Shop from "./features/public/shop/Shop";
 import ProjectsManagement from "./features/admin/projects/ProjectsPage";
 import Blogs from "./features/public/blogs/Blogs";
 import BlogDetailPage from "./features/public/blogs/BlogDetailPage";
-// import ShopProductDetailPage from "./features/public/shop/ShopProductDetailPage";
+import ShopProductDetailPage from "./features/public/shop/ShopProductDetailPage";
 import OrdersManagement from "./features/admin/OrdersManagement";
 import ParticipationPage from "./features/public/ParticpatationPage";
 import { LaboratoriesManagement, LaboratoryDetail } from "./features/admin/laboratories";
@@ -179,22 +179,22 @@ function App() {
             }
           />
         
-       {/*    <Route
+          <Route
             path="/shop"
             element={
               <PublicLayout>
                 <Shop />
               </PublicLayout>
             }
-          /> */}
-          {/* <Route
+          />
+          <Route
             path="/shop/:slug"
             element={
               <PublicLayout>
                 <ShopProductDetailPage />
               </PublicLayout>
             }
-          /> */}
+          />
         
           <Route
             path="/contact"

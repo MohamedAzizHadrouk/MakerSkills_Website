@@ -31,7 +31,7 @@ const Header: React.FC = () => {
       path: "/academy",
       label: "Formations",
     },
-    // { path: "/shop", label: t.nav.shop },
+    { path: "/shop", label: t.nav.shop },
     { path: "/blogs", label: t.nav.blogs },
     { path: "/contact", label: t.nav.contact },
   ];
